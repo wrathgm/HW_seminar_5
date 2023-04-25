@@ -1,0 +1,161 @@
+Урок 5. Рекурсия и алгоритмы
+Задача 1. Задайте список случайных чисел от 1 до 10, выведите все элементы больше 5. Используйте для решения лямбда-функцию.
+2, 3, 4, 6, 7, 8 -> 6, 7, 8
+
+
+import random
+
+# Создаем список случайных чисел от 1 до 10
+lst = [random.randint(1, 10) for i in range(10)]
+
+# Используем лямбда-функцию для вывода элементов больше 5
+result = list(filter(lambda x: x > 5, lst))
+
+# Выводим результат
+print(result)
+
+
+Задача 2. Дан список случайных чисел. Создайте список, в который попадают числа, описывающие случайную возрастающую последовательность. Порядок элементов менять нельзя.
+[1, 5, 2, 3, 4, 6, 1, 7] => [1, 2, 3] или [2, 7] или [4, 6, 7] и т.д.
+
+
+# Исходный список
+lst = [1, 5, 2, 3, 4, 6, 1, 7]
+
+# Создаем список, в который будут добавляться числа последовательности
+result = []
+
+# Переменная для хранения последнего добавленного числа
+last_num = None
+
+# Проходимся по всем элементам исходного списка
+for num in lst:
+    # Если последнее добавленное число меньше текущего числа, добавляем его в результат
+    if last_num is None or last_num < num:
+        result.append(num)
+        last_num = num
+
+# Выводим результат
+print(result)
+
+
+Задача 3. Задайте список случайных чисел от 1 до 10. Посчитайте, сколько всего совпадающих элементов есть в списке. Удалите все повторяющиеся элементы.
+[1, 4, 2, 3, 4, 6, 1, 7] => 4 элемента совпадают Список уникальных элементов
+[1, 4, 2, 3, 6, 7]
+
+
+import random
+
+# Создаем список случайных чисел от 1 до 10
+lst = [random.randint(1, 10) for i in range(10)]
+
+# Находим количество совпадающих элементов
+count = len(lst) - len(set(lst))
+
+# Удаляем повторяющиеся элементы из списка
+unique_lst = list(set(lst))
+
+# Выводим результаты
+print(f"{count} элемента(ов) совпадают")
+print("Список уникальных элементов:")
+print(unique_lst)
+
+
+Задача 4*. (Необязательная). Создайте игру в крестики-нолики.
+
+
+board = [' ' for x in range(9)]
+
+def print_board():
+    print('-------------')
+    print('| ' + board[0] + ' | ' + board[1] + ' | ' + board[2] + ' |')
+    print('-------------')
+    print('| ' + board[3] + ' | ' + board[4] + ' | ' + board[5] + ' |')
+    print('-------------')
+    print('| ' + board[6] + ' | ' + board[7] + ' | ' + board[8] + ' |')
+    print('-------------')
+
+def check_win(mark):
+    return ((board[0] == mark and board[1] == mark and board[2] == mark) or
+            (board[3] == mark and board[4] == mark and board[5] == mark) or
+            (board[6] == mark and board[7] == mark and board[8] == mark) or
+            (board[0] == mark and board[3] == mark and board[6] == mark) or
+            (board[1] == mark and board[4] == mark and board[7] == mark) or
+            (board[2] == mark and board[5] == mark and board[8] == mark) or
+            (board[0] == mark and board[4] == mark and board[8] == mark) or
+            (board[2] == mark and board[4] == mark and board[6] == mark))
+
+def play():
+    players = ['X', 'O']
+    turn = 0
+    game_over = False
+
+    while not game_over:
+        print_board()
+        player = players[turn]
+        print("Твой ход, " + player + ".")
+        position = int(input("Введите позицию 1-9: ")) - 1
+
+        if board[position] == ' ':
+            board[position] = player
+
+            if check_win(player):
+                print_board()
+                print(player + ' Победа!')
+                game_over = True
+            elif ' ' not in board:
+                print_board()
+                print('Ничья!')
+                game_over = True
+            else:
+                turn = (turn + 1) % 2
+        else:
+            print("Эта позиция уже занята. Пожалуйста, выберите другую позицию.")
+
+    play_again = input("Хотели бы вы сыграть еще раз? (да/нет)")
+    if play_again == 'да':
+        for i in range(len(board)):
+            board[i] = ' '
+        play()
+    else:
+        print("Спасибо за игру!")
+
+play()
+
+
+Задача 5*. (Необязательная). Двумерный массив размером 5х5 заполнен случайными нулями и единицами. Игрок может ходить только по полям, заполненным единицами. Проверьте, существует ли путь из точки [0, 0] в точку [4, 4] (эти поля требуется принудительно задать равными единице).
+
+import numpy as np
+
+# Создаем случайный двумерный массив размером 5х5 из 0 и 1
+arr = np.random.randint(2, size=(5, 5))
+
+# Задаем начальную и конечную точки
+start = (0, 0)
+end = (4, 4)
+
+# Функция поиска пути в глубину
+def dfs(arr, node, visited):
+    if node == end:
+        return True
+    visited.add(node)
+    x, y = node
+    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+        next_node = x + dx, y + dy
+        if (
+            0 <= next_node[0] < arr.shape[0]
+            and 0 <= next_node[1] < arr.shape[1]
+            and arr[next_node] == 1
+            and next_node not in visited
+        ):
+            if dfs(arr, next_node, visited):
+                return True
+    return False
+
+# Проверяем, существует ли путь из [0,0] в [4,4]
+if dfs(arr, start, set()):
+    print("Путь существует")
+else:
+    print("Путь не существует")
+	
+	
